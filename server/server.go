@@ -39,7 +39,7 @@ func (s *Server) ConfigureAPI() {
 func configureApi(contextRoot string, port int) {
 	var router = mux.NewRouter()
 	router.HandleFunc(contextRoot+endpoint, func(rw http.ResponseWriter, r *http.Request) {
-
+		HandleURLShortener(rw, r)
 	})
 
 	log.Printf("\nApplication is running in : %d\n", port)
