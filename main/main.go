@@ -17,4 +17,5 @@ func startApplication() {
 	}
 
 	servers := server.NewServer(properties)
+	servers.ConfigureAPI()
 }
