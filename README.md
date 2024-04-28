@@ -8,7 +8,7 @@ try to shorten a URL. The goal of this assignment is not to build a fancy UI but
 2. The code should have following features:
     * If I again ask for the same URL, itshould give me the same URL as it gave before instead
 of generating a new one. 
-    * If the user clicks on the short URL then he should be redirected to the original URL. Write a Redirection API that implements thisfunctionality. 
+    * If the user clicks on the short URL then he should be redirected to the original URL. Write a Redirection API that implements this functionality. 
     * The URL and shortened URL should be stored in-memory by application. 
     * [BONUS] Instead of in-memory,store these things in a caching solution such as Redis, Memcached etc (Or file if you really want). 
 3. Write a metrics API that returns top 3 domain names that have been shortened the most

@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-func HandleURLShortener(rw http.ResponseWriter, r *http.Request) {
+func HandleURLShortener(rw http.ResponseWriter, r *http.Request, shortener service.UrlShortenerApi) {
 	switch r.Method {
 	case http.MethodPost:
-		service.StartShorteningUrl(rw, r)
+		shortener.StartShorteningUrl(r, rw)
 	}
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"URLShortener/service"
 	"fmt"
 	"log"
 	"net/http"
@@ -30,16 +31,16 @@ func NewServer(properties *props.Properties) *Server {
 	return server
 }
 
-func (s *Server) ConfigureAPI() {
+func (s *Server) ConfigureAPI(shortener service.UrlShortenerApi) {
 	s.doOnce.Do(func() {
-		configureApi(s.contextRoot, s.port)
+		configureApi(s.contextRoot, s.port, shortener)
 	})
 }
 
-func configureApi(contextRoot string, port int) {
+func configureApi(contextRoot string, port int, shortener service.UrlShortenerApi) {
 	var router = mux.NewRouter()
 	router.HandleFunc(contextRoot+endpoint, func(rw http.ResponseWriter, r *http.Request) {
-		HandleURLShortener(rw, r)
+		HandleURLShortener(rw, r, shortener)
 	})
 
 	log.Printf("\nApplication is running in : %d\n", port)

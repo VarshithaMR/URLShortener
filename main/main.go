@@ -1,9 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"URLShortener/props"
 	"URLShortener/server"
-	"log"
+	"URLShortener/service"
 )
 
 func main() {
@@ -17,5 +19,7 @@ func startApplication() {
 	}
 
 	servers := server.NewServer(properties)
-	servers.ConfigureAPI()
+
+	newHandler := service.NewURLShortener()
+	servers.ConfigureAPI(newHandler)
 }

@@ -1,7 +1,7 @@
 package props
 
 import (
-	"encoding/json"
+	"gopkg.in/yaml.v2"
 	"io"
 	"os"
 )
@@ -29,7 +29,7 @@ func ReadProperties(filename string) (*Properties, error) {
 	}
 
 	var prop Properties
-	err = json.Unmarshal(data, &prop)
+	err = yaml.Unmarshal(data, &prop)
 	if err != nil {
 		return nil, err
 	}
