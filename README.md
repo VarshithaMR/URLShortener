@@ -39,3 +39,9 @@ Wikipedia: 2
    ![API-2.png](images/API-2.png)
 3. Metrics API : /url-shortener/metrics - GET
    ![API-3.png](images/API-3.png)
+4. Docker Image built succesfully
+   ![Docker-1.png](images/Docker-1.png)
+5. Docker image running successfully in Docker desktop
+   ![Docker-2.png](images/Docker-2.png)
+6. executable formed in Docker
+   ![Docker-3.png](images/Docker-3.png)
