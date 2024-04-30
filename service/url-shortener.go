@@ -33,13 +33,13 @@ func (s *URL) StartShorteningUrl(request *http.Request, response http.ResponseWr
 		return
 	}
 
-	fmt.Printf("Request - full URL - %s", req.URL)
+	fmt.Printf("Request - full URL - %s\n", req.URL)
 	res, err := utils.ShortenUrl(req, s.storeCache)
 	if err != nil {
-		WriteResponse(response, err, 400)
+		WriteResponse(response, err.Error(), 400)
 	}
 
-	fmt.Printf("Response - Shortened URL - %s", res.ShortUrl)
+	fmt.Printf("Response - Shortened URL - %s\n", res.ShortUrl)
 	WriteResponse(response, res, http.StatusOK)
 }
 

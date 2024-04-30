@@ -1,12 +1,11 @@
 package utils
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
+	"net/url"
 
 	"URLShortener/service/cache"
 	"URLShortener/service/models"
@@ -15,35 +14,29 @@ import (
 func ShortenUrl(req models.RequestBody, existingCache cache.StoreURLCache) (models.ResponseBody, error) {
 	var (
 		domain, path, newUrl       string
-		generatedKey, generatedVal int
+		generatedKey, generatedVal [32]byte
 		cacheVal                   cache.CacheItem
 	)
 
-	urlPattern := `^(https?://[^/]+(?:/[^/]+)?)$`
-	regex := regexp.MustCompile(urlPattern)
-	fmt.Println(regex)
-	match := regex.MatchString(req.URL)
-	if !match {
-		return models.ResponseBody{}, errors.New("improper url - regex doesnt match")
+	parsedUrl, err := url.Parse(req.URL)
+	if err != nil {
+		return models.ResponseBody{}, errors.New("cannot parse URL")
 	}
 
-	index := strings.Index(req.URL, "/")
-	if index > 0 && req.URL[index-1:index+1] != "//" {
-		domain = req.URL[:index]
-		path = req.URL[index:]
-		generatedKey = rand.Intn(len(domain))
-		generatedVal = rand.Intn(len(path))
-		value := make(map[int]cache.EndPoint)
-		value[generatedVal] = cache.EndPoint{
-			Domain: domain,
-			Path:   path,
-		}
-		cacheVal = cache.CacheItem{
-			ShortKey: strconv.Itoa(generatedKey),
-			Value:    value,
-		}
-		existingCache.StoreUrl(cacheVal, generatedVal)
+	domain = fmt.Sprintf("%s://%s", parsedUrl.Scheme, parsedUrl.Host)
+	path = parsedUrl.Path
+	generatedKey = sha256.Sum256([]byte(domain))
+	generatedVal = sha256.Sum256([]byte(path))
+	value := make(map[string]cache.EndPoint)
+	value[hex.EncodeToString(generatedVal[:])] = cache.EndPoint{
+		Domain: domain,
+		Path:   path,
 	}
+	cacheVal = cache.CacheItem{
+		ShortKey: hex.EncodeToString(generatedKey[:]),
+		Value:    value,
+	}
+	existingCache.StoreUrl(cacheVal, hex.EncodeToString(generatedVal[:]))
 
 	newUrl = fmt.Sprintf("http://shortenedURL/%d-%d", generatedKey, generatedVal)
 	return models.ResponseBody{
