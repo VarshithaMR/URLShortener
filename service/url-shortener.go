@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-resty/resty/v2"
@@ -32,8 +33,13 @@ func (s *URL) StartShorteningUrl(request *http.Request, response http.ResponseWr
 		return
 	}
 
-	res := utils.ShortenUrl(req, s.storeCache)
+	fmt.Printf("Request - full URL - %s", req.URL)
+	res, err := utils.ShortenUrl(req, s.storeCache)
+	if err != nil {
+		WriteResponse(response, err, 400)
+	}
 
+	fmt.Printf("Response - Shortened URL - %s", res.ShortUrl)
 	WriteResponse(response, res, http.StatusOK)
 }
 
@@ -45,6 +51,7 @@ func (s *URL) StartRedirectingUrl(request *http.Request, response http.ResponseW
 	}
 
 	res := utils.RedirectUrl(req)
+	WriteResponse(response, res, http.StatusOK)
 }
 
 func WriteResponse(rw http.ResponseWriter, resp interface{}, responseCode int) {

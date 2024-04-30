@@ -1,7 +1,6 @@
 package server
 
 import (
-	"URLShortener/service"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"URLShortener/props"
+	"URLShortener/service"
 )
 
 const (

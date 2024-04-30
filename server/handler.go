@@ -13,9 +13,9 @@ func HandleURLShortener(rw http.ResponseWriter, r *http.Request, shortener servi
 	}
 }
 
-func HandleRedirector(rw http.ResponseWriter, r *http.Request) {
+func HandleRedirector(rw http.ResponseWriter, r *http.Request, redirect service.UrlShortenerApi) {
 	switch r.Method {
 	case http.MethodPost:
-		service.StartRedirectingUrl(r, rw)
+		redirect.StartRedirectingUrl(r, rw)
 	}
 }
