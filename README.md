@@ -1,4 +1,4 @@
-# Problem statement
+# INTRODUCTION
 1. Build a simple URL shortenerservice that will accept a URL as an argument over a REST API and
 return a shortened URL as a result. 
     * If you have not used orseen a URL shortener before - please visit https://bitly.com/ and
@@ -18,3 +18,24 @@ Udemy: 6
 YouTube: 4
 Wikipedia: 2
 4. [BONUS] Put this application in a Docker image by writing a Dockerfile and provide the docker image link along with the source code link.
+
+# TECH-STACK
+* go version - 1.22.0
+* framework - Gorilla mux
+* IDE : Intellij IDEA
+* Http Client : Resty
+* Postman
+* Cache - gocache
+* Docker Desktop - 4.28.0
+
+# FAQ
+* Total APIs - 3
+* use Makefile to build and run the project
+
+# IMAGES
+1. Shortening URL : /url-shortener/shorten - POST
+   ![API-1.png](images/API-1.png)
+2. Redirecting URL : /url-shortener/redirect - POST
+   ![API-2.png](images/API-2.png)
+3. Metrics API : /url-shortener/metrics - GET
+   ![API-3.png](images/API-3.png)
