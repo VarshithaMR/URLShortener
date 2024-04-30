@@ -13,9 +13,9 @@ GOOS=linux
 GOARCH=amd64
 
 build:
-	@echo"Building the service...."
+	@echo "Building the service...."
 	$(GO) mod tidy
-	CGO_ENABLED=$(CGO) GOOS=$(GOOS) GOARCH= $(GOARCH) $(GO) build -o $(NAME) $(ROOT_FILE)
+	CGO_ENABLED=${CGO} GOOS=${GOOS} GOARCH=${GOARCH} $(GO) build -o $(NAME) $(ROOT_FILE)
 .PHONY: build
 
 run:
