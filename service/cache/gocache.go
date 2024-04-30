@@ -31,32 +31,23 @@ type EndPoint struct {
 	Path   string
 }
 
-type RedirectCacheItem struct {
-	newUrl string
-	pair   Pair
-}
-
 type Pair struct {
 	shortKey string
 	shortVal string
 }
 
 func (s *storeCache) StoreUrl(cacheItem CacheItem, shortVal string, newUrl string) {
-	var redirectCacheVal RedirectCacheItem
 	value, found := s.shortUrlsCache.Get(cacheItem.ShortKey)
 	if !found {
+		s.shortUrlsCache.Set(cacheItem.ShortKey, cacheItem.Value, 10*time.Minute)
 		fmt.Printf("Key-Value %s-%s stored in cache\n", cacheItem.ShortKey, shortVal)
-		s.shortUrlsCache.Set(cacheItem.ShortKey, cacheItem.Value, -1)
 
-		fmt.Printf("NewUrl-shortKey-shortVal, %s-%s-%s stored in cache\n", newUrl, cacheItem.ShortKey, shortVal)
-		redirectCacheVal = RedirectCacheItem{
-			newUrl: newUrl,
-			pair: Pair{
-				shortKey: cacheItem.ShortKey,
-				shortVal: shortVal,
-			},
+		pair := Pair{
+			shortKey: cacheItem.ShortKey,
+			shortVal: shortVal,
 		}
-		s.redirectCache.Set(redirectCacheVal.newUrl, redirectCacheVal.pair, -1)
+		s.redirectCache.Set(newUrl, pair, 10*time.Minute)
+		fmt.Printf("NewUrl-shortKey-shortVal, %s-%s-%s stored in cache\n", newUrl, cacheItem.ShortKey, shortVal)
 		return
 	}
 	cacheData := value.(map[string]EndPoint)
@@ -71,18 +62,17 @@ func (s *storeCache) StoreUrl(cacheItem CacheItem, shortVal string, newUrl strin
 		Domain: cacheItem.Value[shortVal].Domain,
 		Path:   cacheItem.Value[shortVal].Path,
 	}
-	fmt.Printf("Key-Value %s-%s stored in cache", cacheItem.ShortKey, shortVal)
-	s.shortUrlsCache.Set(cacheItem.ShortKey, cacheData, -1)
 
-	fmt.Printf("NewUrl-shortKey-shortVal, %s-%s-%s stored in cache\n", newUrl, cacheItem.ShortKey, shortVal)
-	redirectCacheVal = RedirectCacheItem{
-		newUrl: newUrl,
-		pair: Pair{
-			shortKey: cacheItem.ShortKey,
-			shortVal: shortVal,
-		},
+	s.shortUrlsCache.Set(cacheItem.ShortKey, cacheData, 10*time.Minute)
+	fmt.Printf("Key-Value %s-%s stored in cache", cacheItem.ShortKey, shortVal)
+
+	pair := Pair{
+		shortKey: cacheItem.ShortKey,
+		shortVal: shortVal,
 	}
-	s.redirectCache.Set(redirectCacheVal.newUrl, redirectCacheVal.pair, -1)
+
+	s.redirectCache.Set(newUrl, pair, 10*time.Minute)
+	fmt.Printf("NewUrl-shortKey-shortVal, %s-%s-%s stored in cache\n", newUrl, cacheItem.ShortKey, shortVal)
 }
 
 func (s *storeCache) GetFullUrl(url string) (string, error) {
