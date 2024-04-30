@@ -15,6 +15,7 @@ import (
 const (
 	shortenEndpoint  = "/shorten"
 	redirectEndpoint = "/redirect"
+	metricsEndpoint  = "/metrics"
 )
 
 type Server struct {
@@ -46,6 +47,10 @@ func configureApi(contextRoot string, port int, shortener service.UrlShortenerAp
 
 	router.HandleFunc(contextRoot+redirectEndpoint, func(rw http.ResponseWriter, r *http.Request) {
 		HandleRedirector(rw, r, shortener)
+	})
+
+	router.HandleFunc(contextRoot+metricsEndpoint, func(rw http.ResponseWriter, r *http.Request) {
+		HandleMetrics(rw, r, shortener)
 	})
 
 	log.Printf("\nApplication is running in : %d\n", port)

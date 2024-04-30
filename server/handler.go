@@ -19,3 +19,10 @@ func HandleRedirector(rw http.ResponseWriter, r *http.Request, redirect service.
 		redirect.StartRedirectingUrl(r, rw)
 	}
 }
+
+func HandleMetrics(rw http.ResponseWriter, r *http.Request, metrics service.UrlShortenerApi) {
+	switch r.Method {
+	case http.MethodGet:
+		metrics.StartMetrics(rw)
+	}
+}

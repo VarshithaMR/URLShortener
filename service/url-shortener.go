@@ -19,6 +19,7 @@ const (
 type UrlShortenerApi interface {
 	StartShorteningUrl(*http.Request, http.ResponseWriter)
 	StartRedirectingUrl(*http.Request, http.ResponseWriter)
+	StartMetrics(http.ResponseWriter)
 }
 
 type URL struct {
@@ -57,6 +58,14 @@ func (s *URL) StartRedirectingUrl(request *http.Request, response http.ResponseW
 	}
 
 	fmt.Printf("Response - Full URL - %s\n", res.Url)
+	WriteResponse(response, res, http.StatusOK)
+}
+
+func (s *URL) StartMetrics(response http.ResponseWriter) {
+	res, err := utils.Metrics(s.storeCache)
+	if err != nil {
+		WriteResponse(response, err.Error(), 400)
+	}
 	WriteResponse(response, res, http.StatusOK)
 }
 
