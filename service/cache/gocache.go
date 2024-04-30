@@ -51,7 +51,7 @@ func (s *storeCache) StoreUrl(cacheItem CacheItem, shortVal string, newUrl strin
 				shortVal: shortVal,
 			},
 		}
-		s.newCache.Set(newUrl, redirectCacheVal, -1)
+		s.newCache.Set(redirectCacheVal.newUrl, redirectCacheVal.pair, -1)
 		return
 	}
 	cacheData := value.(map[string]EndPoint)
@@ -77,7 +77,7 @@ func (s *storeCache) StoreUrl(cacheItem CacheItem, shortVal string, newUrl strin
 			shortVal: shortVal,
 		},
 	}
-	s.newCache.Set(newUrl, redirectCacheVal, -1)
+	s.newCache.Set(redirectCacheVal.newUrl, redirectCacheVal.pair, -1)
 }
 
 func (s *storeCache) GetFullUrl(url string) (string, error) {

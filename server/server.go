@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	endpoint = "/shorten"
+	shortenEndpoint  = "/shorten"
+	redirectEndpoint = "/redirect"
 )
 
 type Server struct {
@@ -39,8 +40,12 @@ func (s *Server) ConfigureAPI(shortener service.UrlShortenerApi) {
 
 func configureApi(contextRoot string, port int, shortener service.UrlShortenerApi) {
 	var router = mux.NewRouter()
-	router.HandleFunc(contextRoot+endpoint, func(rw http.ResponseWriter, r *http.Request) {
+	router.HandleFunc(contextRoot+shortenEndpoint, func(rw http.ResponseWriter, r *http.Request) {
 		HandleURLShortener(rw, r, shortener)
+	})
+
+	router.HandleFunc(contextRoot+redirectEndpoint, func(rw http.ResponseWriter, r *http.Request) {
+		HandleRedirector(rw, r, shortener)
 	})
 
 	log.Printf("\nApplication is running in : %d\n", port)
