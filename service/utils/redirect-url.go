@@ -1,7 +1,17 @@
 package utils
 
-import "URLShortener/service/models"
+import (
+	"URLShortener/service/cache"
+	"URLShortener/service/models/redirect"
+)
 
-func RedirectUrl(req models.RequestBody) models.ResponseBody {
-	return models.ResponseBody{}
+func RedirectUrl(req redirect.RequestBody, existingCache cache.StoreURLCache) (redirect.ResponseBody, error) {
+	url, err := existingCache.GetFullUrl(req.ShortUrl)
+	if err != nil {
+		return redirect.ResponseBody{}, err
+	}
+
+	return redirect.ResponseBody{
+		Url: url,
+	}, nil
 }

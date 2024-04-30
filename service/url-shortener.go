@@ -27,13 +27,13 @@ type URL struct {
 }
 
 func (s *URL) StartShorteningUrl(request *http.Request, response http.ResponseWriter) {
-	req, err := utils.GetRequestBody(request.Body)
+	req, err := utils.GetRequestBodyShorten(request.Body)
 	if err != nil {
 		WriteResponse(response, "Request body improper", 400)
 		return
 	}
 
-	fmt.Printf("Request - full URL - %s\n", req.URL)
+	fmt.Printf("Request - Full URL - %s\n", req.URL)
 	res, err := utils.ShortenUrl(req, s.storeCache)
 	if err != nil {
 		WriteResponse(response, err.Error(), 400)
@@ -44,13 +44,19 @@ func (s *URL) StartShorteningUrl(request *http.Request, response http.ResponseWr
 }
 
 func (s *URL) StartRedirectingUrl(request *http.Request, response http.ResponseWriter) {
-	req, err := utils.GetRequestBody(request.Body)
+	req, err := utils.GetRequestBodyRedirect(request.Body)
 	if err != nil {
 		WriteResponse(response, "Request body improper", 400)
 		return
 	}
 
-	res := utils.RedirectUrl(req)
+	fmt.Printf("Request - Shortened URL - %s\n", req.ShortUrl)
+	res, err := utils.RedirectUrl(req, s.storeCache)
+	if err != nil {
+		WriteResponse(response, err.Error(), 400)
+	}
+
+	fmt.Printf("Response - Full URL - %s\n", res.Url)
 	WriteResponse(response, res, http.StatusOK)
 }
 

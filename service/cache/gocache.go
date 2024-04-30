@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -8,7 +9,8 @@ import (
 )
 
 type StoreURLCache interface {
-	StoreUrl(CacheItem, string)
+	StoreUrl(CacheItem, string, string)
+	GetFullUrl(string) (string, error)
 }
 type storeCache struct {
 	newCache *cache.Cache
@@ -24,11 +26,32 @@ type EndPoint struct {
 	Path   string
 }
 
-func (s *storeCache) StoreUrl(cacheItem CacheItem, shortVal string) {
+type RedirectCacheItem struct {
+	newUrl string
+	pair   Pair
+}
+
+type Pair struct {
+	shortKey string
+	shortVal string
+}
+
+func (s *storeCache) StoreUrl(cacheItem CacheItem, shortVal string, newUrl string) {
+	var redirectCacheVal RedirectCacheItem
 	value, found := s.newCache.Get(cacheItem.ShortKey)
 	if !found {
 		fmt.Printf("Key-Value %s-%s stored in cache\n", cacheItem.ShortKey, shortVal)
 		s.newCache.Set(cacheItem.ShortKey, cacheItem.Value, -1)
+
+		fmt.Printf("NewUrl-shortKey-shortVal, %s-%s-%s stored in cache\n", newUrl, cacheItem.ShortKey, shortVal)
+		redirectCacheVal = RedirectCacheItem{
+			newUrl: newUrl,
+			pair: Pair{
+				shortKey: cacheItem.ShortKey,
+				shortVal: shortVal,
+			},
+		}
+		s.newCache.Set(newUrl, redirectCacheVal, -1)
 		return
 	}
 	cacheData := value.(map[string]EndPoint)
@@ -45,6 +68,35 @@ func (s *storeCache) StoreUrl(cacheItem CacheItem, shortVal string) {
 	}
 	fmt.Printf("Key-Value %s-%s stored in cache", cacheItem.ShortKey, shortVal)
 	s.newCache.Set(cacheItem.ShortKey, cacheData, -1)
+
+	fmt.Printf("NewUrl-shortKey-shortVal, %s-%s-%s stored in cache\n", newUrl, cacheItem.ShortKey, shortVal)
+	redirectCacheVal = RedirectCacheItem{
+		newUrl: newUrl,
+		pair: Pair{
+			shortKey: cacheItem.ShortKey,
+			shortVal: shortVal,
+		},
+	}
+	s.newCache.Set(newUrl, redirectCacheVal, -1)
+}
+
+func (s *storeCache) GetFullUrl(url string) (string, error) {
+	value, found := s.newCache.Get(url)
+	if !found {
+		fmt.Printf("This url doesnt exist in cache. Please request existing ones")
+		return "", errors.New("short url doesnt exist")
+	}
+
+	pair := value.(Pair)
+	value, found = s.newCache.Get(pair.shortKey)
+	if !found {
+		return "", errors.New("short key doesnt exist")
+	}
+
+	cacheData := value.(map[string]EndPoint)
+	urlPart := cacheData[pair.shortVal]
+	return urlPart.Domain + urlPart.Path, nil
+
 }
 
 func NewCache() StoreURLCache {

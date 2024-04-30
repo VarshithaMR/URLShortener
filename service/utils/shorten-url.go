@@ -8,10 +8,10 @@ import (
 	"net/url"
 
 	"URLShortener/service/cache"
-	"URLShortener/service/models"
+	"URLShortener/service/models/shorten"
 )
 
-func ShortenUrl(req models.RequestBody, existingCache cache.StoreURLCache) (models.ResponseBody, error) {
+func ShortenUrl(req shorten.RequestBody, existingCache cache.StoreURLCache) (shorten.ResponseBody, error) {
 	var (
 		domain, path, newUrl       string
 		generatedKey, generatedVal [32]byte
@@ -20,7 +20,7 @@ func ShortenUrl(req models.RequestBody, existingCache cache.StoreURLCache) (mode
 
 	parsedUrl, err := url.Parse(req.URL)
 	if err != nil {
-		return models.ResponseBody{}, errors.New("cannot parse URL")
+		return shorten.ResponseBody{}, errors.New("cannot parse URL")
 	}
 
 	domain = fmt.Sprintf("%s://%s", parsedUrl.Scheme, parsedUrl.Host)
@@ -36,10 +36,11 @@ func ShortenUrl(req models.RequestBody, existingCache cache.StoreURLCache) (mode
 		ShortKey: hex.EncodeToString(generatedKey[:]),
 		Value:    value,
 	}
-	existingCache.StoreUrl(cacheVal, hex.EncodeToString(generatedVal[:]))
 
-	newUrl = fmt.Sprintf("http://shortenedURL/%d-%d", generatedKey, generatedVal)
-	return models.ResponseBody{
+	newUrl = fmt.Sprintf("http://shortURL/%s%s", hex.EncodeToString(generatedKey[:1]), hex.EncodeToString(generatedVal[:1]))
+	existingCache.StoreUrl(cacheVal, hex.EncodeToString(generatedVal[:]), newUrl)
+
+	return shorten.ResponseBody{
 		ShortUrl: newUrl,
 	}, nil
 }
