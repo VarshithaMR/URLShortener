@@ -1,14 +1,12 @@
 package service
 
 import (
-	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-resty/resty/v2"
 
-	"URLShortener/service/models"
+	"URLShortener/service/cache"
 	"URLShortener/service/utils"
 )
 
@@ -19,37 +17,34 @@ const (
 
 type UrlShortenerApi interface {
 	StartShorteningUrl(*http.Request, http.ResponseWriter)
+	StartRedirectingUrl(*http.Request, http.ResponseWriter)
 }
 
-type Shortener struct {
+type URL struct {
 	httpClient *resty.Client
+	storeCache cache.StoreURLCache
 }
 
-func (s *Shortener) StartShorteningUrl(request *http.Request, response http.ResponseWriter) {
+func (s *URL) StartShorteningUrl(request *http.Request, response http.ResponseWriter) {
 	req, err := utils.GetRequestBody(request.Body)
 	if err != nil {
 		WriteResponse(response, "Request body improper", 400)
 		return
 	}
 
-	res := ShortenUrl(req)
+	res := utils.ShortenUrl(req, s.storeCache)
 
 	WriteResponse(response, res, http.StatusOK)
 }
 
-func ShortenUrl(req models.RequestBody) models.ResponseBody {
-	encoded := EncodeURL(req.URL)
-	newUrl := fmt.Sprintf("http://shortenedURL/%d", encoded)
-	return models.ResponseBody{
-		ShortUrl: newUrl,
+func (s *URL) StartRedirectingUrl(request *http.Request, response http.ResponseWriter) {
+	req, err := utils.GetRequestBody(request.Body)
+	if err != nil {
+		WriteResponse(response, "Request body improper", 400)
+		return
 	}
-}
 
-func EncodeURL(url string) int {
-	readByte := []byte(url)
-	destByte := make([]byte, hex.EncodedLen(len(readByte)))
-	x := hex.Encode(destByte, readByte)
-	return x
+	res := utils.RedirectUrl(req)
 }
 
 func WriteResponse(rw http.ResponseWriter, resp interface{}, responseCode int) {
@@ -63,7 +58,9 @@ func WriteResponse(rw http.ResponseWriter, resp interface{}, responseCode int) {
 }
 
 func NewURLShortener() UrlShortenerApi {
-	return &Shortener{
+	newCache := cache.NewCache()
+	return &URL{
 		httpClient: resty.New(),
+		storeCache: newCache,
 	}
 }

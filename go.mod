@@ -9,4 +9,10 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-require golang.org/x/net v0.22.0 // indirect
+require (
+	github.com/TwiN/gocache v1.2.4 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
+	go.etcd.io/bbolt v1.3.5 // indirect
+	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+)
