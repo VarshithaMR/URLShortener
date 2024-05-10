@@ -5,8 +5,8 @@ import (
 	"URLShortener/service/models/redirect"
 )
 
-func RedirectUrl(req redirect.RequestBody, existingCache cache.StoreURLCache) (redirect.ResponseBody, error) {
-	url, err := existingCache.GetFullUrl(req.ShortUrl)
+func RedirectUrl(shortUrl string, existingCache cache.StoreURLCache) (redirect.ResponseBody, error) {
+	url, err := existingCache.GetFullUrl(shortUrl)
 	if err != nil {
 		return redirect.ResponseBody{}, err
 	}

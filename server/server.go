@@ -45,7 +45,7 @@ func configureApi(contextRoot string, port int, shortener service.UrlShortenerAp
 		HandleURLShortener(rw, r, shortener)
 	})
 
-	router.HandleFunc(contextRoot+redirectEndpoint, func(rw http.ResponseWriter, r *http.Request) {
+	router.HandleFunc(redirectEndpoint, func(rw http.ResponseWriter, r *http.Request) {
 		HandleRedirector(rw, r, shortener)
 	})
 

@@ -11,7 +11,9 @@ import (
 	"URLShortener/service/models/shorten"
 )
 
-func ShortenUrl(req shorten.RequestBody, existingCache cache.StoreURLCache) (shorten.ResponseBody, error) {
+const query = "q"
+
+func ShortenUrl(req shorten.RequestBody, existingCache cache.StoreURLCache, host string) (shorten.ResponseBody, error) {
 	var (
 		domain, path, newUrl       string
 		generatedKey, generatedVal [32]byte
@@ -37,7 +39,7 @@ func ShortenUrl(req shorten.RequestBody, existingCache cache.StoreURLCache) (sho
 		Value:    value,
 	}
 
-	newUrl = fmt.Sprintf("http://shortURL/%s%s", hex.EncodeToString(generatedKey[:1]), hex.EncodeToString(generatedVal[:1]))
+	newUrl = fmt.Sprintf("http://%s/redirect?%s=%s%s", host, query, hex.EncodeToString(generatedKey[:1]), hex.EncodeToString(generatedVal[:1]))
 	existingCache.StoreUrl(cacheVal, hex.EncodeToString(generatedVal[:]), newUrl)
 
 	return shorten.ResponseBody{
