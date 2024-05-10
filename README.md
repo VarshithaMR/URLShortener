@@ -35,11 +35,11 @@ Wikipedia: 2
 # IMAGES
 1. Shortening URL : /url-shortener/shorten - POST
    ![API-1.png](images/API-1.png)
-2. Redirecting URL : /url-shortener/redirect - POST
+2. Redirecting URL : /redirect - GET
    ![API-2.png](images/API-2.png)
 3. Metrics API : /url-shortener/metrics - GET
    ![API-3.png](images/API-3.png)
-4. Docker Image built succesfully
+4. Docker Image built successfully
    ![Docker-1.png](images/Docker-1.png)
 5. Docker image running successfully in Docker desktop
    ![Docker-2.png](images/Docker-2.png)
